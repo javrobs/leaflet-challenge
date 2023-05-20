@@ -4,18 +4,25 @@ var map = L.map("map",{
     zoom:2,
     });
 
-
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map)
+initialize();
 
 
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson").then(data=>{
-    console.log(data.features[0])
-    addCircles(data.features);
+function initialize(){
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    fetchCircles("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson");
+}
+
+
+function fetchCircles(urlEarthquake){
+d3.json(urlEarthquake).then(data=>{
+    var circles=addCircles(data.features);
+    circles.addTo(map)
+    
 });
-
+};
 
 function controls(map,circles){
     var baseMaps = {
@@ -47,7 +54,7 @@ function addCircles(features){
             <hr>Magnitude: ${feature.properties.mag}<br>
             Depth: ${feature.geometry.coordinates[2]}`));
     });
-    circles.addTo(map)    
+    return circles 
 };
 
 function ranger(data){
@@ -84,6 +91,26 @@ function colorpicker(data){
     };
 }
 
+var selector = L.control({position:"topright"});
+selector.onAdd = function(){
+    var div2 = L.DomUtil.create("div","selector");
+    div2.innerHTML="<select id='timeSelect'>\
+                    <option value='hour'>1 Hour ago</option>\
+                    <option value='day'>1 Day ago</option>\
+                    <option value='week' selected>7 Days ago</option>\
+                    <option value='month'>30 Days ago</option>\
+                    </select>\
+                    <select id='magSelect'>\
+                    <option value='all'>All Earthquakes</option>\
+                    <option value='1.0'>M1.0+ Earthquakes</option>\
+                    <option value='2.5' selected>M2.5+ Earthquakes</option>\
+                    <option value='4.5'>M4.5+ Earthquakes</option>\
+                    <option value='significant'>Significant Earthquakes</option>\
+                    </select>";
+    return div2;
+}
+selector.addTo(map)
+
 
 var legend = L.control({position: 'bottomright'});
 legend.onAdd = function(){
@@ -92,12 +119,24 @@ legend.onAdd = function(){
      // loop through our density intervals and generate a label with a colored square for each interval
     let content= "<h3>Depth</h3><table>";
     for (var i = 0; i < grades.length; i++) {
-        console.log("hello");
         content += "<tr><td style=background-color:" + colorpicker(grades[i]) + "></td><td>"+grades[i]+"</td></tr>";
     };
     content+= "</table>";
-    console.log(content);
     div.innerHTML += content;
     return div;
     };
 legend.addTo(map);
+
+
+
+d3.selectAll("select").on("change",()=>{
+    map.eachLayer((layer) =>{
+        if (!Object.keys(layer).includes("_url")){
+            map.removeLayer(layer);
+        };
+    });
+    let time=d3.select("select#timeSelect").property("value");
+    let mag=d3.select("select#magSelect").property("value");
+    let url=`https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${mag}_${time}.geojson`
+    fetchCircles(url);
+});

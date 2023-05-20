@@ -17,7 +17,7 @@ div.infoLegend{
 
 table,td{
   border: 1px solid;
-  background-color:aliceblue;
+  background-color:rgba(240, 248, 255, .5);
 }
 
 .infoLegend td {
@@ -28,7 +28,7 @@ table,td{
   text-align:center;
 }
 
-h3{
+h2,h3{
   margin:0;
   text-align:center;
 }

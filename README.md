@@ -17,4 +17,12 @@
 - [D3:](https://d3js.org/) For JSON calls to USGS API
 
 ## Results
-![Results](Images/ss.png)
+_2.5+ Magnitude, 7 days_  
+![1 week Results](Images/ss.png)
+
+## Bonus
+Added dropdown options for magnitude and timeframe to take advantage of USGS's different query options, it updates the map every time a new option is selected:  
+![Bonus](Images/bonus.png)  
+
+Bonus example: _All Earthquakes, last 30 days_  
+![All last month](Images/ss2.png) 
