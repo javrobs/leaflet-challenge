@@ -3,6 +3,36 @@ body {
   margin: 0;
 }
 
+div.legendItem{
+  height:20px;
+  width:20px;
+}
+
+div.infoLegend{
+  /* height: 200px; */
+  /* width:50px; */
+  padding:5px 8px;
+  /* background-color: rgb(223, 223, 223); */
+}
+
+table,td{
+  border: 1px solid;
+  background-color:aliceblue;
+}
+
+.infoLegend td {
+  /* display: inline-block; */
+  min-width: 15px;
+  padding:2px;
+  /* height: 22px; */
+  text-align:center;
+}
+
+h3{
+  margin:0;
+  text-align:center;
+}
+
 #map,
 body,
 html {
